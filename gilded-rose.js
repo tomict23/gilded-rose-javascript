@@ -4,6 +4,63 @@ export class Item {
     this.sellIn = sellIn;
     this.quality = quality;
   }
+
+  updateQuality() {}
+}
+
+export class Basic extends Item {
+  updateQuality() {
+    this.sellIn--;
+    if (this.quality < 50) {
+      this.quality--;
+    }
+    if (this.sellIn < 0) {
+      this.quality--;
+    }
+    if (this.quality < 0) {
+      this.quality = 0;
+    }
+  }
+}
+
+export class Legendary extends Item {
+  updateQuality() {}
+}
+
+export class Cheese extends Item {
+  updateQuality() {
+    this.sellIn--;
+    if (this.quality < 50) {
+      this.quality++;
+    }
+  }
+}
+
+export class Tickets extends Item {
+  updateQuality() {
+    this.sellIn--;
+    if (this.sellIn <= 10) {
+      this.quality += 2;
+    }
+    if (this.sellIn <= 5) {
+      this.quality++;
+    }
+    if (this.sellIn < 0) {
+      this.quality = 0;
+    }
+  }
+}
+
+export class Conjured extends Item {
+  updateQuality() {
+    this.sellIn--;
+    if (this.quality > 0) {
+      this.quality -= 2;
+    }
+    if (this.quality < 0) {
+      this.quality = 0;
+    }
+  }
 }
 
 export let items = [];
@@ -16,52 +73,26 @@ items.push(new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20));
 items.push(new Item("Conjured Mana Cake", 3, 6));
 
 export const updateQuality = () => {
-  for (let item of items) {
-    if (
-      item.name != "Aged Brie" &&
-      item.name != "Backstage passes to a TAFKAL80ETC concert"
-    ) {
-      if (item.quality > 0) {
-        if (item.name != "Sulfuras, Hand of Ragnaros") {
-          item.quality = item.quality - 1;
-        }
-      }
-    } else {
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
-        if (item.name == "Backstage passes to a TAFKAL80ETC concert") {
-          if (item.sellIn < 11) {
-            if (item.quality < 50) {
-              item.quality = item.quality + 1;
-            }
-          }
-          if (item.sellIn < 6) {
-            if (item.quality < 50) {
-              item.quality = item.quality + 1;
-            }
-          }
-        }
-      }
-    }
-    if (item.name != "Sulfuras, Hand of Ragnaros") {
-      item.sellIn = item.sellIn - 1;
-    }
-    if (item.sellIn < 0) {
-      if (item.name != "Aged Brie") {
-        if (item.name != "Backstage passes to a TAFKAL80ETC concert") {
-          if (item.quality > 0) {
-            if (item.name != "Sulfuras, Hand of Ragnaros") {
-              item.quality = item.quality - 1;
-            }
-          }
-        } else {
-          item.quality = item.quality - item.quality;
-        }
-      } else {
-        if (item.quality < 50) {
-          item.quality = item.quality + 1;
-        }
-      }
-    }
+  //
+  for (const item of items) {
+    item.updateQuality();
   }
+  //
 };
+
+//Factory funcs.
+
+export function ItemFactory(name, sellIn, quality) {
+  switch (name) {
+    case "Aged Brie":
+      return new Cheese(name, sellIn, quality);
+    case "basic":
+      return new Basic(name, sellIn, quality);
+    case "Backstage":
+      return new Tickets(name, sellIn, quality);
+    case "Sulfuras, Hand of Ragnaros":
+      return new Legendary(name, sellIn, quality);
+    case "Conjured":
+      return new Conjured(name, sellIn, quality);
+  }
+}
